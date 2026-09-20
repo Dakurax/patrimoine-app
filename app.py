@@ -262,7 +262,7 @@ else:
                 prix = yf.Ticker(c["ticker"]).history(period="1d")["Close"].iloc[-1]
                 valeur = prix * c["quantite"]
                 total_crypto += valeur
-                st.markdown(f'<div style="background:#1a1f2e;padding:10px;border-radius:8px;margin:5px 0;">🔵 <b>{c["nom"]}</b> — Prix : {prix:.2f}€ — Valeur : {valeur:.2f}€</div>', unsafe_allow_html=True)
+                st.markdown(f'<div style="background:#1a1f2e;padding:10px;border-radius:8px;margin:5px 0;">🔵 <b>{c["nom"]}</b> — Quantité : {c["quantite"]} — Prix : {prix:.2f}€ — Valeur : {valeur:.2f}€</div>', unsafe_allow_html=True)
             except:
                 st.markdown(f'<div style="background:#1a1f2e;padding:10px;border-radius:8px;margin:5px 0;">🔵 <b>{c["nom"]}</b> — Prix non disponible</div>', unsafe_allow_html=True)
         st.success(f"**Total crypto : {total_crypto:.2f}€**")
