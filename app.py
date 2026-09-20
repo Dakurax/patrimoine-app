@@ -143,7 +143,11 @@ else:
     # ─── CTO ───
     st.header("🌍 Mon CTO")
     response_cto = requests.get(f"{API_URL}/cto", headers=headers)
+    if response_cto.status_code == 200:
     ctos = response_cto.json()
+    else:
+    st.error(f"Erreur API CTO : {response_cto.status_code} — {response_cto.text}")
+    ctos = []
 
     if ctos:
         for c in ctos:
