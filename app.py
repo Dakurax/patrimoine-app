@@ -140,6 +140,61 @@ else:
     else:
         st.info("Aucune position pour l'instant.")
 
+    # ─── CTO ───
+    st.header("🌍 Mon CTO")
+    response_cto = requests.get(f"{API_URL}/cto", headers=headers)
+    ctos = response_cto.json()
+
+    if ctos:
+        for c in ctos:
+            try:
+                prix = yf.Ticker(c["ticker"]).history(period="1d")["Close"].iloc[-1]
+                valeur = prix * c["quantite"]
+                pv = (prix - c["px_moyen"]) * c["quantite"]
+                total += valeur
+                couleur = "🟢" if pv > 0 else "🔴"
+                st.markdown(f'<div style="background:#1a1f2e;padding:10px;border-radius:8px;margin:5px 0;">{couleur} <b>{c["nom"]}</b> — Quantité : {c["quantite"]} — Prix : {prix:.2f}€ — Valeur : {valeur:.2f}€ — PV : {pv:.2f}€</div>', unsafe_allow_html=True)
+            except:
+                st.markdown(f'<div style="background:#1a1f2e;padding:10px;border-radius:8px;margin:5px 0;">📌 <b>{c["nom"]}</b> — Prix non disponible</div>', unsafe_allow_html=True)
+        st.success(f"**Total CTO : {sum([yf.Ticker(c['ticker']).history(period='1d')['Close'].iloc[-1] * c['quantite'] for c in ctos]):.2f}€**")
+    else:
+        st.info("Aucune position CTO pour l'instant.")
+
+    with st.expander("➕ Ajouter une position CTO"):
+        nom_cto = st.text_input("Nom", key="nom_cto")
+        ticker_cto = st.text_input("Ticker", key="ticker_cto")
+        quantite_cto = st.number_input("Quantité", min_value=0.0, key="qte_cto")
+        px_moyen_cto = st.number_input("Prix moyen", min_value=0.0, key="px_cto")
+        if st.button("Ajouter", key="add_cto"):
+            requests.post(f"{API_URL}/cto", headers=headers,
+                json={"nom": nom_cto, "ticker": ticker_cto, "quantite": quantite_cto, "px_moyen": px_moyen_cto})
+            st.success("Position ajoutée !")
+            st.rerun()
+
+    with st.expander("✏️ Modifier une position CTO"):
+        if ctos:
+            nom_cto_mod = st.selectbox("Choisir", [c["nom"] for c in ctos], key="mod_cto")
+            cto = next(c for c in ctos if c["nom"] == nom_cto_mod)
+            nouvel_achat_cto = st.number_input("Quantité achetée", min_value=0.0, key="qte_mod_cto")
+            prix_achat_cto = st.number_input("Prix d'achat", min_value=0.0, key="px_mod_cto")
+            if nouvel_achat_cto > 0 and prix_achat_cto > 0:
+                nouvelle_qte_cto = cto["quantite"] + nouvel_achat_cto
+                nouveau_px_cto = ((cto["quantite"] * cto["px_moyen"]) + (nouvel_achat_cto * prix_achat_cto)) / nouvelle_qte_cto
+                st.info(f"➡️ Nouvelle quantité : {nouvelle_qte_cto} — Nouveau prix moyen : {nouveau_px_cto:.3f}€")
+                if st.button("Confirmer", key="confirm_mod_cto"):
+                    requests.put(f"{API_URL}/cto/{nom_cto_mod}", headers=headers,
+                        json={"quantite": nouvelle_qte_cto, "px_moyen": round(nouveau_px_cto, 3)})
+                    st.success("Position modifiée !")
+                    st.rerun()
+
+    with st.expander("🗑️ Supprimer une position CTO"):
+        if ctos:
+            nom_cto_suppr = st.selectbox("Choisir", [c["nom"] for c in ctos], key="suppr_cto")
+            st.warning(f"⚠️ Supprimer {nom_cto_suppr} ?")
+            if st.button("Supprimer", key="del_cto"):
+                requests.delete(f"{API_URL}/cto/{nom_cto_suppr}", headers=headers)
+                st.success("Position supprimée !")
+                st.rerun()
     # ─── Livrets ───
     st.header("🏦 Mes livrets")
     response_liv = requests.get(f"{API_URL}/livrets", headers=headers)
