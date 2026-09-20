@@ -78,7 +78,7 @@ else:
                 noms.append(p["nom"])
                 valeurs.append(round(valeur, 2))
                 couleur = "🟢" if pv > 0 else "🔴"
-                st.markdown(f'<div style="background:#1a1f2e;padding:10px;border-radius:8px;margin:5px 0;">{couleur} <b>{p["nom"]}</b> — Prix : {prix:.2f}€ — Valeur : {valeur:.2f}€ — PV : {pv:.2f}€</div>', unsafe_allow_html=True)
+                st.markdown(f'<div style="background:#1a1f2e;padding:10px;border-radius:8px;margin:5px 0;">{couleur} <b>{p["nom"]}</b> — Quantité : {p["quantite"]} — Prix : {prix:.2f}€ — Valeur : {valeur:.2f}€ — PV : {pv:.2f}€</div>', unsafe_allow_html=True)
             except:
                 st.markdown(f'<div style="background:#1a1f2e;padding:10px;border-radius:8px;margin:5px 0;">📌 <b>{p["nom"]}</b> — Prix non disponible</div>', unsafe_allow_html=True)
 
