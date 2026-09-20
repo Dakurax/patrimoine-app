@@ -131,8 +131,8 @@ else:
             fig.update_layout(paper_bgcolor="#0f1117", font_color="#e8eaf0")
             st.plotly_chart(fig, use_container_width=True)
 
-    else:
-        st.info("Aucune position pour l'instant.")
+        else:
+            st.info("Aucune position pour l'instant.")
 
     # ─── Livrets ───
     st.header("🏦 Mes livrets")
