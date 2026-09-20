@@ -195,3 +195,18 @@ else:
             if response.status_code == 200:
                 st.success("Crypto ajoutée !")
                 st.rerun()
+    # ─── Total patrimoine global ───
+    st.header("💼 Patrimoine Total")
+    try:
+        total_global = total + total_livrets + total_crypto
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.metric("Positions", f"{total:.2f}€")
+        with col2:
+            st.metric("Livrets", f"{total_livrets:.2f}€")
+        with col3:
+            st.metric("Crypto", f"{total_crypto:.2f}€")
+        with col4:
+            st.metric("Total", f"{total_global:.2f}€")
+    except:
+        st.info("Ajoute des données pour voir le total.")
