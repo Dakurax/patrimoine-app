@@ -131,3 +131,37 @@ else:
             if response.status_code == 200:
                 st.success("Livret ajouté !")
                 st.rerun()
+
+    # ─── Crypto ───
+    st.header("₿ Mes cryptos")
+    response_crypto = requests.get(f"{API_URL}/crypto", headers=headers)
+    cryptos = response_crypto.json()
+
+    if cryptos:
+        total_crypto = 0
+        for c in cryptos:
+            try:
+                prix = yf.Ticker(c["ticker"]).history(period="1d")["Close"].iloc[-1]
+                valeur = prix * c["quantite"]
+                total_crypto += valeur
+                st.markdown(f'<div style="background:#1a1f2e;padding:10px;border-radius:8px;margin:5px 0;">🔵 <b>{c["nom"]}</b> — Prix : {prix:.2f}€ — Valeur : {valeur:.2f}€</div>', unsafe_allow_html=True)
+            except:
+                st.markdown(f'<div style="background:#1a1f2e;padding:10px;border-radius:8px;margin:5px 0;">🔵 <b>{c["nom"]}</b> — Prix non disponible</div>', unsafe_allow_html=True)
+        st.success(f"**Total crypto : {total_crypto:.2f}€**")
+    else:
+        st.info("Aucune crypto pour l'instant.")
+
+    # ─── Ajouter une crypto ───
+    with st.expander("➕ Ajouter une crypto"):
+        nom_crypto = st.text_input("Nom", key="nom_crypto")
+        ticker_crypto = st.text_input("Ticker (ex: BTC-EUR)", key="ticker_crypto")
+        quantite_crypto = st.number_input("Quantité", min_value=0.0, key="qte_crypto")
+        if st.button("Ajouter la crypto"):
+            response = requests.post(
+                f"{API_URL}/crypto",
+                headers=headers,
+                json={"nom": nom_crypto, "ticker": ticker_crypto, "quantite": quantite_crypto}
+            )
+            if response.status_code == 200:
+                st.success("Crypto ajoutée !")
+                st.rerun()
