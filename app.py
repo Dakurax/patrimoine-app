@@ -55,6 +55,12 @@ else:
 
     # ─── Positions ───
     st.header("📈 Mes positions")
+    # ─── Initialisation des totaux ───
+    total = 0
+    total_livrets = 0
+    total_crypto = 0
+    # ─── Initialisation des totaux ───
+    
     response = requests.get(f"{API_URL}/positions", headers=headers)
     positions = response.json()
 
