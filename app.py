@@ -101,7 +101,7 @@ else:
                     st.success("Position ajoutée !")
                     st.rerun()
 
-            # ─── Modifier une position ───
+     # ─── Modifier une position ───
     with st.expander("✏️ Modifier une position"):
         if positions:
             noms_pos = [p["nom"] for p in positions]
@@ -168,6 +168,29 @@ else:
                 st.success("Livret ajouté !")
                 st.rerun()
 
+     # ─── Modifier un livret ───
+    with st.expander("✏️ Modifier un livret"):
+        if livrets:
+            nom_liv_mod = st.selectbox("Choisir", [l["nom"] for l in livrets], key="mod_liv")
+            nouvelle_valeur = st.number_input("Nouvelle valeur (€)", min_value=0.0, key="val_mod_liv")
+            if st.button("Modifier", key="confirm_mod_liv"):
+                requests.put(f"{API_URL}/livrets/{nom_liv_mod}",
+                    headers=headers,
+                    json={"valeur": nouvelle_valeur}
+                )
+                st.success("Livret modifié !")
+                st.rerun()
+
+    # ─── Supprimer un livret ───
+    with st.expander("🗑️ Supprimer un livret"):
+        if livrets:
+            nom_liv_suppr = st.selectbox("Choisir", [l["nom"] for l in livrets], key="suppr_liv")
+            st.warning(f"⚠️ Supprimer {nom_liv_suppr} ?")
+            if st.button("Supprimer", key="del_liv"):
+                requests.delete(f"{API_URL}/livrets/{nom_liv_suppr}", headers=headers)
+                st.success("Livret supprimé !")
+                st.rerun()
+
     # ─── Crypto ───
     st.header("₿ Mes cryptos")
     response_crypto = requests.get(f"{API_URL}/crypto", headers=headers)
@@ -201,6 +224,31 @@ else:
             if response.status_code == 200:
                 st.success("Crypto ajoutée !")
                 st.rerun()
+
+    # ─── Modifier une crypto ───
+    with st.expander("✏️ Modifier une crypto"):
+        if cryptos:
+            nom_crypto_mod = st.selectbox("Choisir", [c["nom"] for c in cryptos], key="mod_crypto")
+            crypto = next(c for c in cryptos if c["nom"] == nom_crypto_mod)
+            nouvelle_qte = st.number_input("Nouvelle quantité", min_value=0.0, value=float(crypto["quantite"]), key="qte_mod_crypto")
+            if st.button("Modifier", key="confirm_mod_crypto"):
+                requests.put(f"{API_URL}/crypto/{nom_crypto_mod}",
+                    headers=headers,
+                    json={"quantite": nouvelle_qte}
+                )
+                st.success("Crypto modifiée !")
+                st.rerun()
+
+    # ─── Supprimer une crypto ───
+    with st.expander("🗑️ Supprimer une crypto"):
+        if cryptos:
+            nom_crypto_suppr = st.selectbox("Choisir", [c["nom"] for c in cryptos], key="suppr_crypto")
+            st.warning(f"⚠️ Supprimer {nom_crypto_suppr} ?")
+            if st.button("Supprimer", key="del_crypto"):
+                requests.delete(f"{API_URL}/crypto/{nom_crypto_suppr}", headers=headers)
+                st.success("Crypto supprimée !")
+                st.rerun()
+                
     # ─── Total patrimoine global ───
     st.header("💼 Patrimoine Total")
     try:
