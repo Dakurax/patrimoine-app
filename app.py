@@ -95,6 +95,36 @@ else:
                     st.success("Position ajoutée !")
                     st.rerun()
 
+            # ─── Modifier une position ───
+    with st.expander("✏️ Modifier une position"):
+        if positions:
+            noms_pos = [p["nom"] for p in positions]
+            nom_choisi = st.selectbox("Choisir", noms_pos, key="mod_pos")
+            pos = next(p for p in positions if p["nom"] == nom_choisi)
+            nouvel_achat = st.number_input("Quantité achetée", min_value=0.0, key="qte_mod")
+            prix_achat = st.number_input("Prix d'achat", min_value=0.0, key="px_mod")
+            if nouvel_achat > 0 and prix_achat > 0:
+                nouvelle_qte = pos["quantite"] + nouvel_achat
+                nouveau_px = ((pos["quantite"] * pos["px_moyen"]) + (nouvel_achat * prix_achat)) / nouvelle_qte
+                st.info(f"➡️ Nouvelle quantité : {nouvelle_qte} — Nouveau prix moyen : {nouveau_px:.3f}€")
+                if st.button("Confirmer", key="confirm_mod_pos"):
+                    requests.put(f"{API_URL}/positions/{nom_choisi}",
+                        headers=headers,
+                        json={"quantite": nouvelle_qte, "px_moyen": round(nouveau_px, 3)}
+                    )
+                    st.success("Position modifiée !")
+                    st.rerun()
+
+    # ─── Supprimer une position ───
+    with st.expander("🗑️ Supprimer une position"):
+        if positions:
+            nom_suppr = st.selectbox("Choisir", [p["nom"] for p in positions], key="suppr_pos")
+            st.warning(f"⚠️ Supprimer {nom_suppr} ?")
+            if st.button("Supprimer", key="del_pos"):
+                requests.delete(f"{API_URL}/positions/{nom_suppr}", headers=headers)
+                st.success("Position supprimée !")
+                st.rerun()
+
         # ─── Camembert positions ───
         if valeurs:
             fig = px.pie(values=valeurs, names=noms, title="Répartition du portefeuille")
