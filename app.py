@@ -5,6 +5,52 @@ import plotly.express as px
 
 st.set_page_config(page_title="Patrimoine App", page_icon="📊")
 
+st.markdown("""
+<style>
+    .stApp {
+        background-color: #0f1117;
+        color: #e8eaf0;
+    }
+    .position-line {
+        background-color: #1a1f2e;
+        border-radius: 8px;
+        padding: 0.6rem 1rem;
+        margin: 0.3rem 0;
+        border: 1px solid #2d3748;
+        font-size: 0.95rem;
+    }
+    div[data-testid="metric-container"] {
+        background: linear-gradient(135deg, #1a1f2e, #232a3b);
+        border: 1px solid #2d3748;
+        border-radius: 12px;
+        padding: 1rem;
+    }
+    div[data-testid="metric-container"] label {
+        color: #90a4ae !important;
+    }
+    div[data-testid="metric-container"] div {
+        color: #4fc3f7 !important;
+        font-size: 1.8rem;
+        font-weight: 700;
+    }
+    .stSuccess {
+        background-color: #1b2e22 !important;
+        border-left: 4px solid #43a047 !important;
+        border-radius: 8px;
+    }
+    .stInfo {
+        background-color: #1a2535 !important;
+        border-left: 4px solid #4fc3f7 !important;
+        border-radius: 8px;
+    }
+    .stWarning {
+        background-color: #2e2210 !important;
+        border-left: 4px solid #ffa726 !important;
+        border-radius: 8px;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 API_URL = "https://patrimoine-api-production.up.railway.app"
 
 # ─── Session state ───
@@ -78,9 +124,9 @@ else:
                 noms.append(p["nom"])
                 valeurs.append(round(valeur, 2))
                 couleur = "🟢" if pv > 0 else "🔴"
-                st.markdown(f'<div style="background:#1a1f2e;padding:10px;border-radius:8px;margin:5px 0;">{couleur} <b>{p["nom"]}</b> — Quantité : {p["quantite"]} — Prix : {prix:.2f}€ — Valeur : {valeur:.2f}€ — PV : {pv:.2f}€</div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="position-line">{couleur} <b>{p["nom"]}</b> — Quantité : {p["quantite"]} — Prix : {prix:.2f}€ — Valeur : {valeur:.2f}€ — PV : {pv:.2f}€</div>', unsafe_allow_html=True)
             except:
-                st.markdown(f'<div style="background:#1a1f2e;padding:10px;border-radius:8px;margin:5px 0;">📌 <b>{p["nom"]}</b> — Prix non disponible</div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="position-line">📌 <b>{p["nom"]}</b> — Prix non disponible</div>', unsafe_allow_html=True)
 
         st.success(f"**Total positions : {total:.2f}€**")
 
@@ -157,9 +203,9 @@ else:
                 pv = (prix - c["px_moyen"]) * c["quantite"]
                 total += valeur
                 couleur = "🟢" if pv > 0 else "🔴"
-                st.markdown(f'<div style="background:#1a1f2e;padding:10px;border-radius:8px;margin:5px 0;">{couleur} <b>{c["nom"]}</b> — Quantité : {c["quantite"]} — Prix : {prix:.2f}€ — Valeur : {valeur:.2f}€ — PV : {pv:.2f}€</div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="position-line">{couleur} <b>{c["nom"]}</b> — Quantité : {c["quantite"]} — Prix : {prix:.2f}€ — Valeur : {valeur:.2f}€ — PV : {pv:.2f}€</div>', unsafe_allow_html=True)
             except:
-                st.markdown(f'<div style="background:#1a1f2e;padding:10px;border-radius:8px;margin:5px 0;">📌 <b>{c["nom"]}</b> — Prix non disponible</div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="position-line">📌 <b>{c["nom"]}</b> — Prix non disponible</div>', unsafe_allow_html=True)
         st.success(f"**Total CTO : {sum([yf.Ticker(c['ticker']).history(period='1d')['Close'].iloc[-1] * c['quantite'] for c in ctos]):.2f}€**")
     else:
         st.info("Aucune position CTO pour l'instant.")
@@ -208,7 +254,7 @@ else:
         total_livrets = 0
         for l in livrets:
             total_livrets += l["valeur"]
-            st.markdown(f'<div style="background:#1a1f2e;padding:10px;border-radius:8px;margin:5px 0;">💰 <b>{l["nom"]}</b> : {l["valeur"]:.2f}€</div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="position-line">💰 <b>{l["nom"]}</b> : {l["valeur"]:.2f}€</div>', unsafe_allow_html=True)
         st.success(f"**Total livrets : {total_livrets:.2f}€**")
     else:
         st.info("Aucun livret pour l'instant.")
@@ -262,9 +308,9 @@ else:
                 prix = yf.Ticker(c["ticker"]).history(period="1d")["Close"].iloc[-1]
                 valeur = prix * c["quantite"]
                 total_crypto += valeur
-                st.markdown(f'<div style="background:#1a1f2e;padding:10px;border-radius:8px;margin:5px 0;">🔵 <b>{c["nom"]}</b> — Quantité : {c["quantite"]} — Prix : {prix:.2f}€ — Valeur : {valeur:.2f}€</div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="position-line">🔵 <b>{c["nom"]}</b> — Quantité : {c["quantite"]} — Prix : {prix:.2f}€ — Valeur : {valeur:.2f}€</div>', unsafe_allow_html=True)
             except:
-                st.markdown(f'<div style="background:#1a1f2e;padding:10px;border-radius:8px;margin:5px 0;">🔵 <b>{c["nom"]}</b> — Prix non disponible</div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="position-line">🔵 <b>{c["nom"]}</b> — Prix non disponible</div>', unsafe_allow_html=True)
         st.success(f"**Total crypto : {total_crypto:.2f}€**")
     else:
         st.info("Aucune crypto pour l'instant.")
