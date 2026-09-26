@@ -316,6 +316,12 @@ else:
         st.header("💼 Patrimoine Total")
         st.metric("Total", f"{total_patrimoine:.2f}€")
 
+         # ─── Sauvegarde historique ───
+        aujourd_hui = datetime.date.today().isoformat()
+        historique_existant = requests.get(f"{API_URL}/historique", headers=headers).json()
+        if not historique_existant or historique_existant[-1]["date"] != aujourd_hui:
+            requests.post(f"{API_URL}/historique", headers=headers, json={"date": aujourd_hui, "valeur": round(total_patrimoine, 2)})
+
         # ─── Résumé fiscal ───
         st.header("🧾 Résumé fiscal")
         FLAT_TAX = 0.30
